@@ -1,0 +1,22 @@
+Instalar SSH
+	sudo apt-get install openssh-server
+Instalar MYSQL
+	sudo apt-get install mysql-server-5.5
+	
+	root password manttocl
+
+Cambiar configuracion /etc/mysql/my.cnf
+	#bind-address=ip_del_servidor
+	bind-address=0.0.0.0
+	max_allowed_packet=100M
+	
+Restaurar base de datos bitacora
+
+	mysql -uroot -p < bitacora.sql
+
+Crear usuario root de la tabla usuarios
+	use bitacora;
+	insert into usuarios values (0,0,'root',0,sha1('teckun'),0,0,'0');
+
+Conceder permisos de red a usuario root de mysql
+	grant all privileges on *.* to 'root'@'%' identified by 'manttocl' with grant option;

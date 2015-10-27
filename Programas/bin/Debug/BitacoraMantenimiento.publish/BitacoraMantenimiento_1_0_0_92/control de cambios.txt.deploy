@@ -1,0 +1,24 @@
+Ver: 1.0.0.70 (1.0.4510.27909) Fecha: 2012-05-07
+	Se limpia codigo para hacerlo mas legible
+	Se realiza cambio para que cada ventana realice su conexion a la base de datos, para evitar el error que se presentaba al querer realizar una consulta mientras otra consulta ya se estaba realizando.
+	Se cambia subrutina de form1.backgroundworker1 para que vaya actualizando los renglones asyncronamente.
+	Se cambia formato de la columa id y fecha en form1.datagridview1 para que al hacer click en la parte superior para ordenar los datos los ordene correctamente.
+	
+	Pendiente:
+	
+	Mejor control de conexiones abiertas
+	
+Ver: 1.0.0.74 (1.0.4512.21809) Fecha: 2012-05-09
+	Se agrega referencia a mysql.data a prerequisitos de la aplicacion
+	
+Ver: 1.0.4517.23100	Fecha: 2012-05-14
+	Se realiza cambio para que la ventana de busqueda tambien separe las entradas por fecha y muestre las entradas no leidas y los adjuntos.
+	
+	2012-06-05
+	Se corrige funcion de agrupar renglones en resultados de busqueda.
+	Se limpia codigo.
+	
+Ver: 1.0.4626.23921 Fecha: 2012-08-31
+	
+	Se corrige error al presionar enter en un resultado de busqueda vacio.
+	Se agregar funcionalidad de tecla escape a ventanas de busqueda.
