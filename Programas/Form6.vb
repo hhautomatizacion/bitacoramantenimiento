@@ -5,9 +5,9 @@ Public Class Form6
         Dim iRenglon As Integer
         Dim sSQL As String
         If Len(TextBox1.Text) = 0 Then
-            sSQL = "select id,nombre from usuarios order by nombre"
+            sSQL = "SELECT id,nombre FROM usuarios ORDER BY nombre"
         Else
-            sSQL = "select id,nombre from usuarios where nombre like '%" & TextBox1.Text & "%' order by nombre"
+            sSQL = "SELECT id,nombre FROM usuarios WHERE nombre LIKE '%" & TextBox1.Text & "%' ORDER BY nombre"
         End If
         mLector = Consulta(sSQL, Conexion)
         DataGridView1.RowCount = 0
@@ -39,7 +39,7 @@ Public Class Form6
         DataGridView1.Columns.Add("Nombre", "Nombre")
         TipoDeLetra(TextBox1)
         CargarAnchoColumnas(Me, DataGridView1)
-        'Actualizar()
+        Actualizar()
         Timer1.Enabled = False
         Timer1.Interval = 500
         TextBox1.Focus()

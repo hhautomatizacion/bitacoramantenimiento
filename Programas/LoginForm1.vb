@@ -11,20 +11,19 @@ Public Class LoginForm1
     Private Sub OK_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OK.Click
         Dim mLector As MySql.Data.MySqlClient.MySqlDataReader
         Dim mComando As MySql.Data.MySqlClient.MySqlCommand
-
         mComando = New MySql.Data.MySqlClient.MySqlCommand
-        '        mConexion = New MySql.Data.MySqlClient.MySqlConnection
-
-
         If Len(PasswordTextBox.Text) > 0 Then
         Else
             PasswordTextBox.Focus()
             Exit Sub
         End If
         If Len(UsernameTextBox.Text) > 0 Then
-            mLector = Consulta("select * from usuarios where no_empleado=" & UsernameTextBox.Text & " and palabra_ingreso=sha1('" & PasswordTextBox.Text & "')", mConexion)
+            mLector = Consulta("SELECT * FROM usuarios WHERE no_empleado=" & UsernameTextBox.Text & " AND palabra_ingreso=sha1('" & PasswordTextBox.Text & "')", mConexion)
             If mLector.Read Then
                 iIdUsuario = mLector.Item("id")
+                If Val(mLector.Item("super")) <> 0 Then
+                    bSuperUsuario = True
+                End If
             Else
                 iIdUsuario = 0
             End If
@@ -40,24 +39,14 @@ Public Class LoginForm1
         End If
         Try
             mComando.Connection = mConexion
-            mComando.CommandText = "update usuarios set fecha_login=now(), version='" & sVersion & "' where id=" & iIdUsuario
+            mComando.CommandText = "UPDATE usuarios SET fecha_login=now(), version='" & sVersion & "' WHERE id=" & iIdUsuario
             mComando.ExecuteNonQuery()
         Catch mierror As MySql.Data.MySqlClient.MySqlException
             ReportarError(mierror.ToString)
         End Try
-        Dim sListaSuperUsuarios() As String
-        Dim sSuperUsuario As String
-        sListaSuperUsuarios = Split(sSuperUsuarios, ",")
-        For Each sSuperUsuario In sListaSuperUsuarios
-            If iIdUsuario = Val(sSuperUsuario) Then
-                bSuperUsuario = True
-            End If
-        Next
-
         PasswordTextBox.Text = ""
         PasswordTextBox.Focus()
         Me.Close()
-
     End Sub
 
     Private Sub Cancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Cancel.Click
@@ -80,20 +69,10 @@ Public Class LoginForm1
                 e.KeyChar = ""
         End Select
     End Sub
-
-
     Private Sub PasswordTextBox_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles PasswordTextBox.KeyPress
         Select Case e.KeyChar
             Case "'"
                 e.KeyChar = ""
         End Select
-    End Sub
-
-    Private Sub UsernameTextBox_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UsernameTextBox.TextChanged
-
-    End Sub
-
-    Private Sub Label1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Label1.Click
-
     End Sub
 End Class

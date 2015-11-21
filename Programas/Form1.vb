@@ -44,7 +44,6 @@ Public Class Form1
         SaveSetting("BitacoraMantenimiento", "General", "Server", sServer)
         SaveSetting("BitacoraMantenimiento", "General", "TempDir", sTempDir)
         SaveSetting("BitacoraMantenimiento", "General", "LogDir", sLogDir)
-        MiSaveSetting("BitacoraMantenimiento", "General", "SuperUsuarios", sSuperUsuarios)
         MiSaveSetting("BitacoraMantenimiento", "General", "ColorLeido", iColorLeido.ToString)
         MiSaveSetting("BitacoraMantenimiento", "General", "ColorNoLeido", iColorNoLeido.ToString)
         MiSaveSetting("BitacoraMantenimiento", "General", "ColorAgrupar", iColorAgrupar.ToString)
@@ -97,7 +96,7 @@ Public Class Form1
         cProcesos = New Collection
         sVersion = My.Application.Info.Version.ToString
         SplashScreen1.Show()
-        sServer = GetSetting("BitacoraMantenimiento", "General", "Server", "128.128.5.16")
+        sServer = GetSetting("BitacoraMantenimiento", "General", "Server", "mttoserver")
         sUser = GetSetting("BitacoraMantenimiento", "General", "User", "root")
         sPassword = GetSetting("BitacoraMantenimiento", "General", "Password", "manttocl")
         sTempDir = GetSetting("BitacoraMantenimiento", "General", "TempDir", "c:\temp\")
@@ -115,7 +114,7 @@ Public Class Form1
         mConexionModuloPrincipal = NuevaConexion()
 
 
-        sSuperUsuarios = MiGetSetting("BitacoraMantenimiento", "General", "SuperUsuarios", "1")
+
 
         CrearDirectorio(sTempDir)
         CrearDirectorio(sLogDir)
@@ -233,13 +232,13 @@ Public Class Form1
 
 
         iRenglonesPrevios = CInt(e.Argument)
-        iRenglonesNuevos = Val(Obtener("select count(id) as renglonesnuevos from entradas where id >" & iRenglonesPrevios, "renglonesnuevos", mConexionSecundaria))
+        iRenglonesNuevos = Val(Obtener("SELECT COUNT(id) AS renglonesnuevos FROM entradas WHERE id >" & iRenglonesPrevios, "renglonesnuevos", mConexionSecundaria))
         iContador = 1
 
         If iRenglonesNuevos > 0 Then
 
 
-            mLector = Consulta("select id,fecha,maquina,descripcion from entradas where id >" & iRenglonesPrevios, mConexionInicial)
+            mLector = Consulta("SELECT id,fecha,maquina,descripcion FROM entradas WHERE id >" & iRenglonesPrevios, mConexionInicial)
             'Consulta("select entradas.id,entradas.fecha,maquinas.descripcion as maquina,entradas.descripcion from entradas left join maquinas on entradas.maquina=maquinas.id where entradas.id >" & iRenglonesPrevios, mConexionInicial)
 
             Do While mLector.Read
@@ -252,7 +251,7 @@ Public Class Form1
                 dFecha = CDate(mLector.Item("fecha"))
                 sColumnas(0) = mLector.Item("id").ToString
                 sColumnas(1) = dFecha.ToString("yyyy-MM-dd HH:mm:ss")
-                sColumnas(2) = Obtener("SELECT DESCRIPCION FROM MAQUINAS WHERE ID=" & mLector.Item("maquina"), "DESCRIPCION", mConexionSecundaria)
+                sColumnas(2) = Obtener("SELECT descripcion FROM maquinas WHERE id=" & mLector.Item("maquina").ToString, "descripcion", mConexionSecundaria)
                 sColumnas(3) = mLector.Item("descripcion")
 
                 rRenglonNuevo.Id = CInt(mLector.Item("id"))
@@ -421,6 +420,8 @@ Public Class Form1
     End Sub
 
     Private Sub AgregarUsuarioToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AgregarUsuarioToolStripMenuItem.Click
+        Dim iEsSuper As Integer
+        Dim sEsSuper As String
         Dim sNumeroEmpleado1 As String
         Dim sNumeroEmpleado2 As String
         Dim sNombre As String
@@ -438,6 +439,12 @@ Public Class Form1
         If Not bSuperUsuario Then
             MsgBox("No cuenta con suficientes permisos para realizar esta accion")
             Exit Sub
+        End If
+        Do
+            sEsSuper = InputBox("El nuevo usuario es SuperUsuario", "Nuevo usuario").ToUpper
+        Loop Until sEsSuper = "SI" Or sEsSuper = "NO"
+        If sEsSuper = "SI" Then
+            iEsSuper = 1
         End If
         Do
             sNumeroEmpleado1 = InputBox("Teclee numero de empleado", "Nuevo usuario")
@@ -470,7 +477,7 @@ Public Class Form1
             Else
                 Try
                     mComando.Connection = mConexion
-                    mComando.CommandText = "insert into usuarios values (0," & iIdUsuario & ",'" & sNombre & "'," & sNumeroEmpleado1 & ",sha1('" & sPassword1 & "'),now(),now(),'" & sVersion & "')"
+                    mComando.CommandText = "insert into usuarios values (0," & iIdUsuario & ",'" & sNombre & "'," & sNumeroEmpleado1 & ",sha1('" & sPassword1 & "')," & IESSUPER.TOSTRING & ",now(),now(),'" & sVersion & "')"
                     mComando.ExecuteNonQuery()
                     MsgBox("El usuario se ha agregado con exito")
                     Actualizar(lUltimoRegistroCargado)

@@ -64,7 +64,7 @@ Public Class Form3
         DataGridView1.Columns.Add("FechaReg", "FechaReg")
         TipoDeLetra(TextBox1)
         CargarAnchoColumnas(Me, DataGridView1)
-        'Actualizar()
+        Actualizar()
         Timer1.Interval = 500
         Timer1.Enabled = False
         TextBox1.Focus()
@@ -141,10 +141,7 @@ Public Class Form3
         End If
     End Sub
 
- 
-    Private Sub DataGridView1_CellContentClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles DataGridView1.CellContentClick
 
-    End Sub
 
     Private Sub DataGridView1_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles DataGridView1.KeyUp
         If e.KeyCode = Keys.Enter Then

@@ -25,7 +25,7 @@ Public Class Form8
         DataGridView1.RowCount = Coleccion.Count
         For Each sElemento In Coleccion
             DataGridView1.Item(0, iContador).Value = iContador + 1
-            DataGridView1.Item(1, iContador).Value = Obtener("select descripcion from maquinas where id=" & sElemento, "descripcion", mConexion)
+            DataGridView1.Item(1, iContador).Value = Obtener("SELECT descripcion FROM maquinas WHERE id=" & sElemento, "descripcion", mConexion)
             iContador = iContador + 1
         Next
 
@@ -43,7 +43,4 @@ Public Class Form8
         End If
     End Sub
 
-    Private Sub DataGridView1_CellContentClick_1(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles DataGridView1.CellContentClick
-
-    End Sub
 End Class

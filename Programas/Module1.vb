@@ -21,7 +21,7 @@ Module Module1
     Public sNombreFuente As String
     Public iTamanioFuente As Integer
     Public sEstiloFuente As String
-    Public sSuperUsuarios As String
+    'Public sSuperUsuarios As String
     Public bSuperUsuario As Boolean
     Public bAutoAbrirAdjuntos As Boolean
     Public bAutoAbrirRelacionados As Boolean
@@ -56,12 +56,45 @@ Module Module1
             mConexion.Close()
         Catch e As MySql.Data.MySqlClient.MySqlException
             Select Case e.Number
+
                 Case 1042
                     If MsgBox("No se encuentra el servidor " & vbCrLf & sServer.ToUpper, MsgBoxStyle.RetryCancel) = MsgBoxResult.Cancel Then
                         End
                     End If
+                Case 1049
+                    Using cConexionCreadora As New MySql.Data.MySqlClient.MySqlConnection
+                        cConexionCreadora.ConnectionString = "server=" & sServer & ";" & "user=" & sUser & ";" & "password=" & sPassword & ";" & "database=mysql"
+                        cConexionCreadora.Open()
+                        Using cComandoCreador As New MySql.Data.MySqlClient.MySqlCommand
+                            cComandoCreador.Connection = cConexionCreadora
+
+                            cComandoCreador.CommandText = "CREATE DATABASE bitacora"
+                            cComandoCreador.ExecuteNonQuery()
+                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.adjuntos (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,identrada int(10) unsigned NOT NULL,nombre char(255) NOT NULL,datos longblob NOT NULL,tamanio int(10) unsigned NOT NULL)"
+                            cComandoCreador.ExecuteNonQuery()
+                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.entradas (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,fecha datetime NOT NULL,maquina int(10) unsigned NOT NULL,descripcion char(255) NOT NULL,contenido blob NOT NULL,tamanio int(10) unsigned NOT NULL,jefearea int(10) unsigned NOT NULL,fecha_inicio datetime NOT NULL,fecha_fin datetime NOT NULL,usuario int(10) unsigned NOT NULL,version char(19) NOT NULL,bloqueada tinyint(1) unsigned NOT NULL)"
+                            cComandoCreador.ExecuteNonQuery()
+                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.leidos (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,identrada int(10) unsigned NOT NULL,idusuario int(10) unsigned NOT NULL,fecha_leido datetime NOT NULL)"
+                            cComandoCreador.ExecuteNonQuery()
+                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.maquinas (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,descripcion char(30) NOT NULL,marca char(20) NOT NULL,modelo char(20) NOT NULL,no_serie char(20) NOT NULL,fecha_fabricacion datetime NOT NULL,fecha_registro datetime NOT NULL,ubicacion char(30) NOT NULL,comentarios char(40) NOT NULL)"
+                            cComandoCreador.ExecuteNonQuery()
+                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.preferencias (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,usuario int(10) unsigned NOT NULL,seccion varchar(45) NOT NULL,clave varchar(45) NOT NULL,valor varchar(45) NOT NULL)"
+                            cComandoCreador.ExecuteNonQuery()
+                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.referenciaentradas (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,identrada int(10) unsigned NOT NULL,idreferencia int(10) unsigned NOT NULL)"
+                            cComandoCreador.ExecuteNonQuery()
+                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.referenciamaquinas (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,identrada int(10) unsigned NOT NULL,idmaquina int(10) unsigned NOT NULL)"
+                            cComandoCreador.ExecuteNonQuery()
+                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.responsables (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,identrada int(10) unsigned NOT NULL,idresponsable int(10) unsigned NOT NULL)"
+                            cComandoCreador.ExecuteNonQuery()
+                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.usuarios (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,idusuarioalta int(10) unsigned NOT NULL,nombre char(40) NOT NULL,no_empleado int(10) unsigned NOT NULL,palabra_ingreso char(41) NOT NULL,super tinyint(1) unsigned NOT NULL,fecha_registro datetime NOT NULL,fecha_login datetime NOT NULL,version char(19) NOT NULL)"
+                            cComandoCreador.ExecuteNonQuery()
+                            cComandoCreador.CommandText = "INSERT INTO bitacora.usuarios VALUES (0,0,'" & sUser & "',0,sha1('" & sPassword & "'),1,now(),now(),'" & sVersion & "')"
+                            cComandoCreador.ExecuteNonQuery()
+                        End Using
+                        cConexionCreadora.Close()
+                    End Using
                 Case Else
-                    MsgBox(e.ToString, , "Error " & e.Number)
+                        MsgBox(e.ToString, , "Error " & e.Number)
             End Select
 
             bResultado = False
@@ -144,14 +177,14 @@ Module Module1
                 Descripcion = Descripcion.Replace("'", "")
                 Descripcion = Left(Descripcion, 255)
             End If
-            sSQL = "insert into entradas values (0,now()," & IdMaquina & ",'" & Descripcion & "',@Contenido," & Len(Contenido) & "," & IdJefeArea & ",'" & sFechaInicio & "','" & sFechaFin & "'," & iIdUsuario & ",'" & sVersion & "',0)"
+            sSQL = "INSERT INTO entradas values (0,now()," & IdMaquina & ",'" & Descripcion & "',@Contenido," & Len(Contenido) & "," & IdJefeArea & ",'" & sFechaInicio & "','" & sFechaFin & "'," & iIdUsuario & ",'" & sVersion & "',0)"
             mComando.CommandText = sSQL
             mComando.Parameters.AddWithValue("@Contenido", Contenido)
             mComando.ExecuteNonQuery()
             mComando.Parameters.Clear()
             Try
                 mComando.Connection = mConexion
-                sSQL = "insert into leidos values (0," & iIdEntradaNueva & "," & iIdUsuario & ",now())"
+                sSQL = "INSERT INTO leidos values (0," & iIdEntradaNueva & "," & iIdUsuario & ",now())"
                 mComando.CommandText = sSQL
                 mComando.ExecuteNonQuery()
             Catch mierror As MySql.Data.MySqlClient.MySqlException
@@ -160,7 +193,7 @@ Module Module1
             If IdEntradaReferencia > 0 Then
                 Try
                     mComando.Connection = mConexion
-                    sSQL = "insert into referenciaentradas values (0," & iIdEntradaNueva.ToString & "," & IdEntradaReferencia & ")"
+                    sSQL = "INSERT INTO referenciaentradas values (0," & iIdEntradaNueva.ToString & "," & IdEntradaReferencia & ")"
                     mComando.CommandText = sSQL
                     mComando.ExecuteNonQuery()
                 Catch mierror As MySql.Data.MySqlClient.MySqlException
@@ -170,7 +203,7 @@ Module Module1
             For Each sReferencia In Referencias
                 Try
                     mComando.Connection = mConexion
-                    sSQL = "insert into referenciamaquinas values (0," & iIdEntradaNueva.ToString & "," & sReferencia & ")"
+                    sSQL = "INSERT INTO referenciamaquinas values (0," & iIdEntradaNueva.ToString & "," & sReferencia & ")"
                     mComando.CommandText = sSQL
                     mComando.ExecuteNonQuery()
                 Catch mierror As MySql.Data.MySqlClient.MySqlException
@@ -180,7 +213,7 @@ Module Module1
             For Each sResponsable In Responsables
                 Try
                     mComando.Connection = mConexion
-                    sSQL = "insert into responsables values (0," & iIdEntradaNueva.ToString & "," & sResponsable & ")"
+                    sSQL = "INSERT INTO responsables values (0," & iIdEntradaNueva.ToString & "," & sResponsable & ")"
                     mComando.CommandText = sSQL
                     mComando.ExecuteNonQuery()
                 Catch mierror As MySql.Data.MySqlClient.MySqlException
@@ -195,7 +228,7 @@ Module Module1
                         Try
                             mComando.Connection = mConexion
                             sArchivo = sArchivo.Replace(Chr(10), "-")
-                            sSQL = "insert into adjuntos values (0," & iIdEntradaNueva.ToString & ",'" & FileName(sArchivo).ToLower & "', @FileDump," & FileSize(sArchivo) & ")"
+                            sSQL = "INSERT INTO adjuntos VALUES (0," & iIdEntradaNueva.ToString & ",'" & FileName(sArchivo).ToLower & "', @FileDump," & FileSize(sArchivo) & ")"
                             mComando.CommandText = sSQL
                             mComando.Parameters.AddWithValue("@FileDump", FileDump(sArchivo))
                             mComando.ExecuteNonQuery()
@@ -428,7 +461,7 @@ Module Module1
         mConexion = NuevaConexion()
         Try
             mComando.Connection = mConexion
-            sSQL = "insert into leidos values (0," & IdEntrada & "," & iIdUsuario & ",now())"
+            sSQL = "INSERT INTO leidos VALUES (0," & IdEntrada & "," & iIdUsuario & ",now())"
             mComando.CommandText = sSQL
             mComando.ExecuteNonQuery()
         Catch mierror As MySql.Data.MySqlClient.MySqlException
@@ -464,7 +497,7 @@ Module Module1
         cAdjuntos = New Collection
 
         If bAutoAbrirRelacionados And AbrirReferencias Then
-            mLector = Consulta("select identrada from referenciaentradas where idreferencia=" & IdEntrada, Conexion)
+            mLector = Consulta("SELECT identrada FROM referenciaentradas WHERE idreferencia=" & IdEntrada, Conexion)
             Do While mLector.Read
                 cEntradas.Add(mLector.Item("identrada"))
             Loop

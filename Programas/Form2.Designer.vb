@@ -534,7 +534,7 @@ Partial Class Form2
         'ToolStripStatusLabel5
         '
         Me.ToolStripStatusLabel5.Name = "ToolStripStatusLabel5"
-        Me.ToolStripStatusLabel5.Size = New System.Drawing.Size(338, 17)
+        Me.ToolStripStatusLabel5.Size = New System.Drawing.Size(385, 17)
         Me.ToolStripStatusLabel5.Spring = True
         '
         'ToolStripStatusLabel6

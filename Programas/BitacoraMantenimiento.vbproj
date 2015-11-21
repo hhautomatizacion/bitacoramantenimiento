@@ -267,7 +267,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Blue Boo.ico" />
-    <Content Include="control de cambios.txt" />
   </ItemGroup>
   <ItemGroup>
     <PublishFile Include="MySql.Data">
