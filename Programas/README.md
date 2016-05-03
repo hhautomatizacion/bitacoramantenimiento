@@ -2680,3 +2680,4 @@
 ![wand.gif](/Programas/mini_icons/wand.gif)
 ---
 ![warning.gif](/Programas/mini_icons/warning.gif)
+---
