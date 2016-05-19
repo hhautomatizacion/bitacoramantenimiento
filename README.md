@@ -10,7 +10,7 @@
 * Ago-2011
 
 ## Descripcion del proyecto
-* Bitacora de mantenimiento accesible desde cualquier computadora conectada a la red
+* Reemplaza la clasica bitacora de mantenimiento por un programa de computadora (Parecido a un cliente de correo electronico), otorgando las ventajas de poder insertar archivos adjuntos (fotos, videos, diagramas) y poder realizar busquedas casi inmediatas.
 
 ## Herramientas utilizadas
 * Visual Basic .NET Express 2005
@@ -20,7 +20,7 @@
 * Ninguno
 
 ## Autores
-* emmanuel156
+* <a href="http://www.github.com/emmanuel156">emmanuel156</a> <img src="https://avatars0.githubusercontent.com/u/15036095?v=3&s=50">
 
 ## Comentarios
 * Ninguno
