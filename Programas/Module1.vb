@@ -43,6 +43,20 @@ Module Module1
         Public Leido As Boolean
 
     End Structure
+    Sub CargarOpcionesLocales()
+        sServer = GetSetting("BitacoraMantenimiento", "General", "Server", "mttoserver")
+        sUser = GetSetting("BitacoraMantenimiento", "General", "User", "root")
+        sPassword = GetSetting("BitacoraMantenimiento", "General", "Password", "manttocl")
+        sTempDir = GetSetting("BitacoraMantenimiento", "General", "TempDir", "c:\temp\")
+        sLogDir = GetSetting("BitacoraMantenimiento", "General", "LogDir", "c:\log\")
+    End Sub
+    Sub GuardarOpcionesLocales()
+        SaveSetting("BitacoraMantenimiento", "General", "Server", sServer)
+        SaveSetting("BitacoraMantenimiento", "General", "User", sUser)
+        SaveSetting("BitacoraMantenimiento", "General", "Password", sPassword)
+        SaveSetting("BitacoraMantenimiento", "General", "TempDir", sTempDir)
+        SaveSetting("BitacoraMantenimiento", "General", "LogDir", sLogDir)
+    End Sub
     Function ConexionEstablecida() As Boolean
         Dim bResultado As Boolean
         Dim mConexion As New MySql.Data.MySqlClient.MySqlConnection
@@ -55,46 +69,58 @@ Module Module1
             End If
             mConexion.Close()
         Catch e As MySql.Data.MySqlClient.MySqlException
+
             Select Case e.Number
 
                 Case 1042
-                    If MsgBox("No se encuentra el servidor " & vbCrLf & sServer.ToUpper, MsgBoxStyle.RetryCancel) = MsgBoxResult.Cancel Then
-                        End
-                    End If
-                Case 1049
-                    Using cConexionCreadora As New MySql.Data.MySqlClient.MySqlConnection
-                        cConexionCreadora.ConnectionString = "server=" & sServer & ";" & "user=" & sUser & ";" & "password=" & sPassword & ";" & "database=mysql"
-                        cConexionCreadora.Open()
-                        Using cComandoCreador As New MySql.Data.MySqlClient.MySqlCommand
-                            cComandoCreador.Connection = cConexionCreadora
+                    Select Case MsgBox("No se encuentra el servidor " & vbCrLf & sServer.ToUpper & vbCrLf & "Reintentar con los mismos valores?", MsgBoxStyle.YesNoCancel)
+                        Case MsgBoxResult.No
+                            sServer = InputBox("Servidor",, sServer)
+                            sUser = InputBox("Usuario",, sUser)
+                            sPassword = InputBox("Clave",, sPassword)
+                        Case MsgBoxResult.Cancel
+                            End
+                    End Select
 
-                            cComandoCreador.CommandText = "CREATE DATABASE bitacora"
-                            cComandoCreador.ExecuteNonQuery()
-                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.adjuntos (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,identrada int(10) unsigned NOT NULL,nombre char(255) NOT NULL,datos longblob NOT NULL,tamanio int(10) unsigned NOT NULL)"
-                            cComandoCreador.ExecuteNonQuery()
-                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.entradas (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,fecha datetime NOT NULL,maquina int(10) unsigned NOT NULL,descripcion char(255) NOT NULL,contenido blob NOT NULL,tamanio int(10) unsigned NOT NULL,jefearea int(10) unsigned NOT NULL,fecha_inicio datetime NOT NULL,fecha_fin datetime NOT NULL,usuario int(10) unsigned NOT NULL,version char(19) NOT NULL,bloqueada tinyint(1) unsigned NOT NULL)"
-                            cComandoCreador.ExecuteNonQuery()
-                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.leidos (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,identrada int(10) unsigned NOT NULL,idusuario int(10) unsigned NOT NULL,fecha_leido datetime NOT NULL)"
-                            cComandoCreador.ExecuteNonQuery()
-                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.maquinas (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,descripcion char(30) NOT NULL,marca char(20) NOT NULL,modelo char(20) NOT NULL,no_serie char(20) NOT NULL,fecha_fabricacion datetime NOT NULL,fecha_registro datetime NOT NULL,ubicacion char(30) NOT NULL,comentarios char(40) NOT NULL)"
-                            cComandoCreador.ExecuteNonQuery()
-                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.preferencias (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,usuario int(10) unsigned NOT NULL,seccion varchar(45) NOT NULL,clave varchar(45) NOT NULL,valor varchar(45) NOT NULL)"
-                            cComandoCreador.ExecuteNonQuery()
-                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.referenciaentradas (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,identrada int(10) unsigned NOT NULL,idreferencia int(10) unsigned NOT NULL)"
-                            cComandoCreador.ExecuteNonQuery()
-                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.referenciamaquinas (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,identrada int(10) unsigned NOT NULL,idmaquina int(10) unsigned NOT NULL)"
-                            cComandoCreador.ExecuteNonQuery()
-                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.responsables (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,identrada int(10) unsigned NOT NULL,idresponsable int(10) unsigned NOT NULL)"
-                            cComandoCreador.ExecuteNonQuery()
-                            cComandoCreador.CommandText = "CREATE TABLE  bitacora.usuarios (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,idusuarioalta int(10) unsigned NOT NULL,nombre char(40) NOT NULL,no_empleado int(10) unsigned NOT NULL,palabra_ingreso char(41) NOT NULL,super tinyint(1) unsigned NOT NULL,fecha_registro datetime NOT NULL,fecha_login datetime NOT NULL,version char(19) NOT NULL)"
-                            cComandoCreador.ExecuteNonQuery()
-                            cComandoCreador.CommandText = "INSERT INTO bitacora.usuarios VALUES (0,0,'" & sUser & "',0,sha1('" & sPassword & "'),1,now(),now(),'" & sVersion & "')"
-                            cComandoCreador.ExecuteNonQuery()
-                        End Using
-                        cConexionCreadora.Close()
-                    End Using
                 Case Else
-                        MsgBox(e.ToString, , "Error " & e.Number)
+                    Try
+                        Using cConexionCreadora As New MySql.Data.MySqlClient.MySqlConnection
+                            cConexionCreadora.ConnectionString = "server=" & sServer & ";" & "user=" & sUser & ";" & "password=" & sPassword & ";" & "database=mysql"
+                            cConexionCreadora.Open()
+                            Using cComandoCreador As New MySql.Data.MySqlClient.MySqlCommand
+                                cComandoCreador.Connection = cConexionCreadora
+
+                                cComandoCreador.CommandText = "CREATE DATABASE bitacora"
+                                cComandoCreador.ExecuteNonQuery()
+                                cComandoCreador.CommandText = "CREATE TABLE  bitacora.adjuntos (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,identrada int(10) unsigned NOT NULL,nombre char(255) NOT NULL,datos longblob NOT NULL,tamanio int(10) unsigned NOT NULL)"
+                                cComandoCreador.ExecuteNonQuery()
+                                cComandoCreador.CommandText = "CREATE TABLE  bitacora.entradas (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,fecha datetime NOT NULL,maquina int(10) unsigned NOT NULL,descripcion char(255) NOT NULL,contenido blob NOT NULL,tamanio int(10) unsigned NOT NULL,jefearea int(10) unsigned NOT NULL,fecha_inicio datetime NOT NULL,fecha_fin datetime NOT NULL,usuario int(10) unsigned NOT NULL,version char(19) NOT NULL,bloqueada tinyint(1) unsigned NOT NULL)"
+                                cComandoCreador.ExecuteNonQuery()
+                                cComandoCreador.CommandText = "CREATE TABLE  bitacora.leidos (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,identrada int(10) unsigned NOT NULL,idusuario int(10) unsigned NOT NULL,fecha_leido datetime NOT NULL)"
+                                cComandoCreador.ExecuteNonQuery()
+                                cComandoCreador.CommandText = "CREATE TABLE  bitacora.maquinas (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,descripcion char(30) NOT NULL,marca char(20) NOT NULL,modelo char(20) NOT NULL,no_serie char(20) NOT NULL,fecha_fabricacion datetime NOT NULL,fecha_registro datetime NOT NULL,ubicacion char(30) NOT NULL,comentarios char(40) NOT NULL)"
+                                cComandoCreador.ExecuteNonQuery()
+                                cComandoCreador.CommandText = "CREATE TABLE  bitacora.preferencias (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,usuario int(10) unsigned NOT NULL,seccion varchar(45) NOT NULL,clave varchar(45) NOT NULL,valor varchar(45) NOT NULL)"
+                                cComandoCreador.ExecuteNonQuery()
+                                cComandoCreador.CommandText = "CREATE TABLE  bitacora.referenciaentradas (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,identrada int(10) unsigned NOT NULL,idreferencia int(10) unsigned NOT NULL)"
+                                cComandoCreador.ExecuteNonQuery()
+                                cComandoCreador.CommandText = "CREATE TABLE  bitacora.referenciamaquinas (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,identrada int(10) unsigned NOT NULL,idmaquina int(10) unsigned NOT NULL)"
+                                cComandoCreador.ExecuteNonQuery()
+                                cComandoCreador.CommandText = "CREATE TABLE  bitacora.responsables (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,identrada int(10) unsigned NOT NULL,idresponsable int(10) unsigned NOT NULL)"
+                                cComandoCreador.ExecuteNonQuery()
+                                cComandoCreador.CommandText = "CREATE TABLE  bitacora.usuarios (id int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,idusuarioalta int(10) unsigned NOT NULL,nombre char(40) NOT NULL,no_empleado int(10) unsigned NOT NULL,palabra_ingreso char(41) NOT NULL,super tinyint(1) unsigned NOT NULL,fecha_registro datetime NOT NULL,fecha_login datetime NOT NULL,version char(19) NOT NULL)"
+                                cComandoCreador.ExecuteNonQuery()
+                                cComandoCreador.CommandText = "INSERT INTO bitacora.usuarios VALUES (0,0,'" & sUser & "',0,sha1('" & sPassword & "'),1,now(),now(),'" & sVersion & "')"
+                                cComandoCreador.ExecuteNonQuery()
+                            End Using
+                            cConexionCreadora.Close()
+                        End Using
+                    Catch e
+                        MsgBox(e.Message,, e.Number)
+                    End Try
+
+
+
             End Select
 
             bResultado = False

@@ -96,18 +96,12 @@ Public Class Form1
         cProcesos = New Collection
         sVersion = My.Application.Info.Version.ToString
         SplashScreen1.Show()
-        sServer = GetSetting("BitacoraMantenimiento", "General", "Server", "mttoserver")
-        sUser = GetSetting("BitacoraMantenimiento", "General", "User", "root")
-        sPassword = GetSetting("BitacoraMantenimiento", "General", "Password", "manttocl")
-        sTempDir = GetSetting("BitacoraMantenimiento", "General", "TempDir", "c:\temp\")
-        sLogDir = GetSetting("BitacoraMantenimiento", "General", "LogDir", "c:\log\")
-        SaveSetting("BitacoraMantenimiento", "General", "Server", sServer)
-        SaveSetting("BitacoraMantenimiento", "General", "TempDir", sTempDir)
-        SaveSetting("BitacoraMantenimiento", "General", "LogDir", sLogDir)
+        CargarOpcioneslocales()
         If Not ConexionEstablecida() Then
             Do
             Loop Until ConexionEstablecida()
         End If
+        GuardarOpcioneslocales()
         sFechaAnterior = ""
         mConexionInicial = NuevaConexion()
         mConexionSecundaria = NuevaConexion()
