@@ -17,15 +17,15 @@
 * Programas compilados
 
 ---
-![Blue Boo.ico](/Programas/Blue Boo.ico)
+![Blue Boo.ico](/Programas/Blue%20Boo.ico)
 ---
-![Blue Boo.ico](/Programas/black_icons/Blue Boo.ico)
+![Blue Book.ico](/Programas/black_icons/Blue%20Book.ico)
 ---
-![Orange Boo.ico](/Programas/black_icons/Orange Boo.ico)
+![Orange Book.ico](/Programas/black_icons/Orange%20Book.ico)
 ---
-![Purple Boo.ico](/Programas/black_icons/Purple Boo.ico)
+![Purple Book.ico](/Programas/black_icons/Purple%20Book.ico)
 ---
-![Yellow Boo.ico](/Programas/black_icons/Yellow Boo.ico)
+![Yellow Book.ico](/Programas/black_icons/Yellow%20Book.ico)
 ---
 ![2x2_grid_icon&16.png](/Programas/black_icons/png/2x2_grid_icon&16.png)
 ---
